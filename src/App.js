@@ -15,10 +15,15 @@ const todoList = [
   },
 ];
 
+const today = new Date();
 function App() {
   return (
     <div>
       <h1>Todo List</h1>
+      <h3>
+        Date: {today.getMonth()}/{today.getDate()}/{today.getFullYear()}
+      </h3>
+
       <ul>
         {todoList.map(function (listItem) {
           return <li key={listItem.id}>{listItem.title}</li>;
