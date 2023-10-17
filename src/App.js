@@ -6,7 +6,12 @@ import "./app.css";
 const today = new Date();
 
 function App() {
-  const [newTodo, setNewTodo] = useState("Hi! Something will be here");
+  // const [newTodo, setNewTodo] = useState("Hi! Something will be here");
+  const [todoList, setTodoList] = useState([]);
+
+  const addTodo = (newTodo) => {
+    setTodoList([...todoList, newTodo]);
+  };
 
   return (
     <div>
@@ -14,9 +19,9 @@ function App() {
       <h3>
         Date: {today.getMonth()}/{today.getDate()}/{today.getFullYear()}
       </h3>
-      <AddTodoForm onAddTodo={setNewTodo} />
-      <p>{newTodo}</p>
-      <TodoList />
+      <AddTodoForm onAddTodo={addTodo} />
+      {/* <p>{newTodo}</p> */}
+      <TodoList todoList={todoList} />
     </div>
   );
 }
