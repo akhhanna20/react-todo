@@ -6,11 +6,14 @@ import "./app.css";
 const today = new Date();
 
 function App() {
-  // const [newTodo, setNewTodo] = useState("Hi! Something will be here");
+  //This state change the list of todos;
   const [todoList, setTodoList] = useState([]);
 
+  //Callback handler, to ad New Todo to List
   const addTodo = (newTodo) => {
+    console.log("newTodo", newTodo);
     setTodoList([...todoList, newTodo]);
+    console.log("newTodo", newTodo);
   };
 
   return (
