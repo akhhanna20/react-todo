@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 
-function AddTodoForm(props) {
+function AddTodoForm({ onAddTodo }) {
+  //State for New Todo title from input
+  const [todoTitle, setTodoTitle] = useState("");
+
+  //Handler to set new todoTitle
+  const handleTitleChange = (event) => {
+    const newTodoTitle = event.target.value;
+    setTodoTitle(newTodoTitle);
+  };
+
+  //Event listener, call callback function onAddTodo with new todoTitle object
+  //and reset the todoTitle state to an empty String
+  //Handler works after press "Add" button
   const handleAddTodo = (event) => {
     event.preventDefault();
-    console.log(event);
-
-    const todoTitle = event.target.elements.title.value;
-    console.log(todoTitle);
-    props.onAddTodo(todoTitle);
-    event.target.reset();
+    onAddTodo({ title: todoTitle, id: Date.now() });
+    setTodoTitle("");
   };
 
   return (
@@ -19,7 +27,9 @@ function AddTodoForm(props) {
         name="title"
         type="text"
         id="todoTitle"
-        placeholder="Tipe the task"
+        placeholder="Type the task"
+        value={todoTitle}
+        onChange={handleTitleChange}
       />
 
       <button type="submit">Add</button>
