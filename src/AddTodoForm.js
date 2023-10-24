@@ -16,7 +16,7 @@ function AddTodoForm({ onAddTodo }) {
   const handleAddTodo = (event) => {
     event.preventDefault();
     onAddTodo({ title: todoTitle, id: Date.now() });
-    setTodoTitle(" ");
+    setTodoTitle("");
   };
 
   return (
@@ -27,7 +27,7 @@ function AddTodoForm({ onAddTodo }) {
         name="title"
         type="text"
         id="todoTitle"
-        placeholder="Tipe the task"
+        placeholder="Type the task"
         value={todoTitle}
         onChange={handleTitleChange}
       />

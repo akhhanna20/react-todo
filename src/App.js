@@ -11,9 +11,7 @@ function App() {
 
   //Callback handler, to ad New Todo to List
   const addTodo = (newTodo) => {
-    console.log("newTodo", newTodo);
-    setTodoList([...todoList, newTodo]);
-    console.log("newTodo", newTodo);
+    setTodoList((todoList) => [...todoList, newTodo]);
   };
 
   return (
@@ -23,7 +21,6 @@ function App() {
         Date: {today.getMonth()}/{today.getDate()}/{today.getFullYear()}
       </h3>
       <AddTodoForm onAddTodo={addTodo} />
-      {/* <p>{newTodo}</p> */}
       <TodoList todoList={todoList} />
     </div>
   );
