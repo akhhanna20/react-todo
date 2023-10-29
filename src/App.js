@@ -5,20 +5,30 @@ import "./app.css";
 
 const today = new Date();
 
-function App() {
-  //This state change the list of todos;
+const useSemiPersistentState = () => {
+  //This state change the list of todos method and retrieves objects from localStorage;
+  //When we stored the data, we first converted it to a JSON string.
+  //In order to make use of it, we need to convert JSON string back to a JSON object.
   const [todoList, setTodoList] = useState(
     JSON.parse(localStorage.getItem("savedTodoList"))
   );
+
+  //setItem is used to store objects in localStorage.
+  //To store data in localStorage, you must first stringify it.
+  useEffect(() => {
+    localStorage.setItem("savedTodoList", JSON.stringify(todoList));
+  }, [todoList]);
+
+  return [todoList, setTodoList];
+};
+
+function App() {
+  const [todoList, setTodoList] = useSemiPersistentState();
 
   //Callback handler, to ad New Todo to List
   const addTodo = (newTodo) => {
     setTodoList((todoList) => [...todoList, newTodo]);
   };
-
-  useEffect(() => {
-    localStorage.setItem("savedTodoList", JSON.stringify(todoList));
-  }, [todoList]);
 
   return (
     <div>
