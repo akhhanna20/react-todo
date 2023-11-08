@@ -10,7 +10,7 @@ const useSemiPersistentState = () => {
   //When we stored the data, we first converted it to a JSON string.
   //In order to make use of it, we need to convert JSON string back to a JSON object.
   const [todoList, setTodoList] = useState(
-    JSON.parse(localStorage.getItem("savedTodoList"))
+    JSON.parse(localStorage.getItem("savedTodoList")) || []
   );
 
   //setItem is used to store objects in localStorage.
