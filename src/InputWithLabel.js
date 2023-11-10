@@ -1,7 +1,14 @@
-function InputWithLabel({ label, name, id, value, handleTitleChange }) {
+import React, { useEffect } from "react";
+
+function InputWithLabel({ name, id, value, handleTitleChange, children }) {
+  const inputRef = React.useRef();
+  useEffect(() => {
+    inputRef.current.focus();
+  });
+
   return (
     <>
-      <label htmlFor="todoTitle">{label}</label>
+      <label htmlFor="todoTitle">{children}</label>
       &nbsp;
       <input
         name={name}
@@ -10,6 +17,7 @@ function InputWithLabel({ label, name, id, value, handleTitleChange }) {
         placeholder="Type the task"
         value={value}
         onChange={handleTitleChange}
+        ref={inputRef}
       />
     </>
   );
