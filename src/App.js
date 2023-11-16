@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "./app.css";
+import TodoListItem from "./TodoListItem";
 
 const today = new Date();
 
@@ -30,6 +31,11 @@ function App() {
     setTodoList((todoList) => [...todoList, newTodo]);
   };
 
+  const removeTodo = (id) => {
+    const newTodoList = todoList.filter((el) => el.id !== id);
+    setTodoList(newTodoList);
+  };
+
   return (
     <>
       <h1>Todo List</h1>
@@ -37,7 +43,7 @@ function App() {
         Date: {today.getMonth()}/{today.getDate()}/{today.getFullYear()}
       </h3>
       <AddTodoForm onAddTodo={addTodo} />
-      <TodoList todoList={todoList} />
+      <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
     </>
   );
 }
