@@ -2,29 +2,43 @@ import React, { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "./app.css";
-import TodoListItem from "./TodoListItem";
 
 const today = new Date();
 
-const useSemiPersistentState = () => {
+function App() {
   //This state change the list of todos method and retrieves objects from localStorage;
   //When we stored the data, we first converted it to a JSON string.
   //In order to make use of it, we need to convert JSON string back to a JSON object.
-  const [todoList, setTodoList] = useState(
-    JSON.parse(localStorage.getItem("savedTodoList")) || []
-  );
+  const [todoList, setTodoList] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    new Promise((resolve, reject) => {
+      //the function is executed automatically when the promise is constructed
+      //after 2 sec signal that the job is done with the result
+      setTimeout(
+        () =>
+          resolve({
+            data: {
+              todoList: JSON.parse(localStorage.getItem("savedTodoList")) || [],
+            },
+          }),
+        2000
+      );
+    }).then((result) => {
+      setTodoList(result.data.todoList);
+      setIsLoading(false);
+    });
+  }, []);
 
   //setItem is used to store objects in localStorage.
   //To store data in localStorage, you must first stringify it.
   useEffect(() => {
-    localStorage.setItem("savedTodoList", JSON.stringify(todoList));
-  }, [todoList]);
-
-  return [todoList, setTodoList];
-};
-
-function App() {
-  const [todoList, setTodoList] = useSemiPersistentState();
+    if (!isLoading) {
+      localStorage.setItem("savedTodoList", JSON.stringify(todoList));
+    }
+  });
 
   //Callback handler, to ad New Todo to List
   const addTodo = (newTodo) => {
@@ -38,12 +52,18 @@ function App() {
 
   return (
     <>
-      <h1>Todo List</h1>
       <h3>
         Date: {today.getMonth()}/{today.getDate()}/{today.getFullYear()}
       </h3>
-      <AddTodoForm onAddTodo={addTodo} />
-      <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          <h1>Todo List</h1>
+          <AddTodoForm onAddTodo={addTodo} />
+          <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
+        </div>
+      )}
     </>
   );
 }
