@@ -1,10 +1,16 @@
 import React from "react";
+import { GoTrash } from "react-icons/go";
 
 function TodoListItem({ todo, onRemoveTodo, listItem }) {
   return (
-    <li>
+    <li className="todo-list-item">
       {todo}
-      <button onClick={() => onRemoveTodo(listItem.id)}>Remove</button>
+      {/* <button > */}
+      <GoTrash
+        className="icon-delete"
+        onClick={() => onRemoveTodo(listItem.id)}
+      />
+      {/* </button> */}
     </li>
   );
 }

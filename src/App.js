@@ -3,9 +3,9 @@ import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "./app.css";
 
-const today = new Date();
-
 function App() {
+  const today = new Date();
+
   //This state change the list of todos method and retrieves objects from localStorage;
   //When we stored the data, we first converted it to a JSON string.
   //In order to make use of it, we need to convert JSON string back to a JSON object.
@@ -51,20 +51,20 @@ function App() {
   };
 
   return (
-    <>
-      <h3>
-        Date: {today.getMonth()}/{today.getDate()}/{today.getFullYear()}
-      </h3>
+    <div className="todo-wrapper">
       {isLoading ? (
         <p>Loading...</p>
       ) : (
         <div>
           <h1>Todo List</h1>
+          <h3>
+            Date: {today.getMonth() + 1}/{today.getDate()}/{today.getFullYear()}
+          </h3>
           <AddTodoForm onAddTodo={addTodo} />
           <TodoList todoList={todoList} onRemoveTodo={removeTodo} />
         </div>
       )}
-    </>
+    </div>
   );
 }
 

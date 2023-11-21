@@ -23,16 +23,23 @@ function AddTodoForm({ onAddTodo }) {
   return (
     <>
       <form onSubmit={handleAddTodo}>
-        <InputWithLabel
-          name="title"
-          id="todoTitle"
-          value={todoTitle}
-          handleTitleChange={handleTitleChange}
-        >
-          Title:
-        </InputWithLabel>
-
-        <button type="submit">Add</button>
+        <div className="todo-input">
+          <div className="todo-input-item">
+            <InputWithLabel
+              name="title"
+              id="todoTitle"
+              value={todoTitle}
+              handleTitleChange={handleTitleChange}
+            >
+              Title:
+            </InputWithLabel>
+          </div>
+          <div className="todo-input-item ">
+            <button type="submit" className="primary-btn">
+              Add
+            </button>
+          </div>
+        </div>
       </form>
     </>
   );
