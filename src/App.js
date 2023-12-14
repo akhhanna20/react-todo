@@ -2,152 +2,165 @@ import React, { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "./app.css";
-//require("dotenv").config();
-//import "dotenv/config";
-//require("dotenv").config();
 
 function App() {
-  console.log("env", process.env.REACT_APP_TABLE_NAME);
   const today = new Date();
 
   const [todoList, setTodoList] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
 
-  const [dragId, setDragId] = useState();
+  //To GET data from Airtable
+  const fetchData = async () => {
+    const options = {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
+      },
+    };
+    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
 
-  // const fetchData = async () => {
-  //   const options = {
-  //     method: "GET",
-  //     headers: {
-  //       Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-  //     },
-  //   };
-  //   const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
+    try {
+      const response = await fetch(url, options);
 
-  //   try {
-  //     const response = await fetch(url, options);
+      if (!response.ok) {
+        const message = `Error: ${response.status}`;
+        throw new Error(message);
+      }
 
-  //     if (!response.ok) {
-  //       const message = `Error: ${response.status}`;
-  //       throw new Error(message);
-  //     }
-
-  //     const data = await response.json();
-  //     return data;
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchData().then((data) => {
-  //     const todos = data.records.map((todo) => {
-  //       const newTodo = {
-  //         title: todo.fields.title,
-  //         id: todo.id,
-  //       };
-  //       return newTodo;
-  //     });
-  //     setTodoList(todos);
-  //     setIsLoading(false);
-  //   });
-  // }, []);
-
-  useEffect(() => {
-    new Promise((resolve, reject) => {
-      //the function is executed automatically when the promise is constructed
-      //after 2 sec signal that the job is done with the result
-      setTimeout(
-        () =>
-          resolve({
-            //This state change the list of todos method and retrieves objects from localStorage;
-            //When we stored the data, we first converted it to a JSON string.
-            //In order to make use of it, we need to convert JSON string back to a JSON object.
-            data: {
-              todoList: JSON.parse(localStorage.getItem("savedTodoList")) || [],
-            },
-          }),
-        2000
-      );
-    }).then((result) => {
-      setTodoList(result.data.todoList);
+      const todosFromAPI = await response.json();
+      const todos = todosFromAPI.records.map((todo) => {
+        //console.log("TODO", todo);
+        const newTodo = {
+          id: todo.id,
+          title: todo.fields.title,
+          done: todo.fields.done,
+        };
+        return newTodo;
+      });
+      setTodoList(todos);
       setIsLoading(false);
-    });
-  }, []);
-
-  //setItem is used to store objects in localStorage.
-  //To store data in localStorage, you must first stringify it.
-
-  const reorderItems = (newTodoList) => {
-    const newItems = newTodoList.map((todo, index) => {
-      todo.order = index;
-      return todo;
-    });
-    setTodoList(newItems);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
-  //Callback handler, to ad New Todo to List
-  const addTodo = (newTodo) => {
-    setTodoList((todoList) => [
-      ...todoList,
-      { ...newTodo, done: false, order: todoList.length },
-    ]);
-  };
-  // console.log(todoList);
+  //To add data to Airtable
+  const postTodo = async (newTodo) => {
+    const airtableData = {
+      fields: {
+        title: newTodo.title,
+        done: "0",
+      },
+    };
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
+        "Content-Type": "application/json", // Add this line
+      },
+      body: JSON.stringify(airtableData),
+    };
+    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
 
-  const removeTodo = (id) => {
-    const newTodoList = todoList.filter((todo) => todo.id !== id);
-    //setTodoList(newTodoList);
-    reorderItems(newTodoList);
+    try {
+      const response = await fetch(url, options);
+      console.log("resp", response.json());
+
+      if (!response.ok) {
+        const message = `Error has ocured: ${response.status}`;
+        throw new Error(message);
+      }
+      const dataResponse = await response.json();
+      console.log(", data1", dataResponse);
+
+      return dataResponse;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
   };
 
-  const handleCheckboxChange = (id) => {
-    const newTodoList = todoList.map((todo) =>
-      todo.id === id ? { ...todo, done: !todo.done } : todo
+  //To change data in Airtable
+  const changeTodo = async (id, updTodo) => {
+    const airtableDataToUpdate = {
+      fields: {
+        done: updTodo.done !== "0" ? "0" : "1",
+      },
+    };
+    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
+    const options = {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(airtableDataToUpdate),
+    };
+
+    try {
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        throw new Error(`Error has occurred: ${response.status}`);
+      }
+      const todoFromAPI = await response.json();
+      return todoFromAPI;
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  };
+
+  const deleteTodo = async (id) => {
+    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error has occurred: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  };
+
+  //Function to add new todo to the list
+  const addTodo = async (newTodo) => {
+    console.log("newTodo", newTodo);
+    await postTodo(newTodo);
+    await fetchData();
+  };
+  //Function to remove todo from the list
+  const removeTodo = async (id) => {
+    await deleteTodo(id);
+    await fetchData();
+  };
+
+  //Handler for checkbox(done/undone)
+  const handleCheckboxChange = async (id) => {
+    const updTodo = todoList.find((todo) => todo.id === id);
+    await changeTodo(id, updTodo);
+    // Update the local state to reflect the changes
+    const updatedList = todoList.map((todo) =>
+      todo.id === id
+        ? { ...todo, done: updTodo.done !== "0" ? "0" : "1" }
+        : todo
     );
-    setTodoList(newTodoList);
+    setTodoList(updatedList);
   };
 
   useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem("savedTodoList", JSON.stringify(todoList));
-    }
-  });
-
-  const handleDrag = (event) => {
-    setDragId(event.currentTarget.id);
-
-    console.log("dragID", event.currentTarget.id);
-    console.log("dragIDTYPE", typeof event.currentTarget.id);
-  };
-  console.log("todoList", todoList);
-
-  const handleDrop = (event) => {
-    const dragBoxIndex = todoList.findIndex(
-      (todo) => todo.id.toString() === dragId
-    );
-    console.log("drag", dragBoxIndex);
-    const dropBoxIndex = todoList.findIndex(
-      (todo) => todo.id.toString() === event.currentTarget.id
-    );
-
-    console.log("dropInd", dropBoxIndex);
-    console.log("dropID", event.currentTarget.id);
-
-    const newTodoState = todoList.map((todo) => {
-      if (todo.id.toString() === dragId) {
-        todo.order = dropBoxIndex;
-      }
-      if (todo.id.toString() === event.currentTarget.id) {
-        todo.order = dragBoxIndex;
-      }
-      return todo;
-    });
-
-    setTodoList(newTodoState);
-  };
+    fetchData();
+  }, []);
 
   return (
     <div className="todo-wrapper">
@@ -164,8 +177,8 @@ function App() {
           todoList={todoList}
           onRemoveTodo={removeTodo}
           handleCheckboxChange={handleCheckboxChange}
-          handleDrag={handleDrag}
-          handleDrop={handleDrop}
+          // handleDrag={handleDrag}
+          // handleDrop={handleDrop}
         />
       )}
     </div>

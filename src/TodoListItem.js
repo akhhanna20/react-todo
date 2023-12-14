@@ -1,32 +1,18 @@
 import React from "react";
 import { GoTrash } from "react-icons/go";
 
-function TodoListItem({
-  todo,
-  onRemoveTodo,
-  listItem,
-  handleCheckboxChange,
-  handleDrag,
-  handleDrop,
-}) {
+function TodoListItem({ todo, onRemoveTodo, listItem, handleCheckboxChange }) {
   return (
-    <li
-      className="todo-list-item"
-      draggable={true}
-      id={listItem.id}
-      onDragOver={(event) => event.preventDefault()}
-      onDragStart={handleDrag}
-      onDrop={handleDrop}
-    >
+    <li className="todo-list-item">
       <input
         type="checkbox"
         id="listItem"
         name="listIitem"
-        checked={listItem.done}
+        checked={listItem.done !== "0"}
         onChange={() => handleCheckboxChange(listItem.id)}
       />
 
-      <div className={listItem.done ? "close" : ""}>{todo}</div>
+      <div className={listItem.done !== "0" ? "close" : ""}>{todo}</div>
 
       <GoTrash
         className="icon-delete"
