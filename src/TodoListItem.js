@@ -1,23 +1,9 @@
 import React from "react";
 import { GoTrash } from "react-icons/go";
 
-function TodoListItem({
-  todo,
-  onRemoveTodo,
-  listItem,
-  handleCheckboxChange,
-  handleDrag,
-  handleDrop,
-}) {
+function TodoListItem({ todo, onRemoveTodo, listItem, handleCheckboxChange }) {
   return (
-    <li
-      className="todo-list-item"
-      draggable={true}
-      id={listItem.id}
-      onDragOver={(event) => event.preventDefault()}
-      onDragStart={handleDrag}
-      onDrop={handleDrop}
-    >
+    <li className="todo-list-item">
       <input
         type="checkbox"
         id="listItem"
