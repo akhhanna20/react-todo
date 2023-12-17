@@ -8,11 +8,11 @@ function TodoListItem({ todo, onRemoveTodo, listItem, handleCheckboxChange }) {
         type="checkbox"
         id="listItem"
         name="listIitem"
-        checked={listItem.done !== "0"}
+        checked={listItem.done}
         onChange={() => handleCheckboxChange(listItem.id)}
       />
 
-      <div className={listItem.done !== "0" ? "close" : ""}>{todo}</div>
+      <div className={listItem.done ? "close" : ""}>{todo}</div>
 
       <GoTrash
         className="icon-delete"

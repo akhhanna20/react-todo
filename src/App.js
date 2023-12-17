@@ -29,11 +29,10 @@ function App() {
 
       const todosFromAPI = await response.json();
       const todos = todosFromAPI.records.map((todo) => {
-        //console.log("TODO", todo);
         const newTodo = {
           id: todo.id,
           title: todo.fields.title,
-          done: todo.fields.done,
+          done: Boolean(todo.fields.done),
         };
         return newTodo;
       });
@@ -49,14 +48,14 @@ function App() {
     const airtableData = {
       fields: {
         title: newTodo.title,
-        done: "0",
+        done: newTodo.done,
       },
     };
     const options = {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-        "Content-Type": "application/json", // Add this line
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(airtableData),
     };
@@ -84,7 +83,7 @@ function App() {
   const changeTodo = async (id, updTodo) => {
     const airtableDataToUpdate = {
       fields: {
-        done: updTodo.done !== "0" ? "0" : "1",
+        done: !updTodo.done,
       },
     };
     const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
@@ -149,13 +148,7 @@ function App() {
   const handleCheckboxChange = async (id) => {
     const updTodo = todoList.find((todo) => todo.id === id);
     await changeTodo(id, updTodo);
-    // Update the local state to reflect the changes
-    const updatedList = todoList.map((todo) =>
-      todo.id === id
-        ? { ...todo, done: updTodo.done !== "0" ? "0" : "1" }
-        : todo
-    );
-    setTodoList(updatedList);
+    await fetchData();
   };
 
   useEffect(() => {
@@ -177,8 +170,6 @@ function App() {
           todoList={todoList}
           onRemoveTodo={removeTodo}
           handleCheckboxChange={handleCheckboxChange}
-          // handleDrag={handleDrag}
-          // handleDrop={handleDrop}
         />
       )}
     </div>

@@ -16,7 +16,7 @@ function AddTodoForm({ onAddTodo }) {
   //Handler works after press "Add" button
   const handleAddTodo = (event) => {
     event.preventDefault();
-    onAddTodo({ title: todoTitle, id: Date.now(), done: "0" });
+    onAddTodo({ title: todoTitle, id: Date.now(), done: false });
     setTodoTitle("");
   };
 
