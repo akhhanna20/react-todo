@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "./app.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   const today = new Date();
@@ -156,23 +157,34 @@ function App() {
   }, []);
 
   return (
-    <div className="todo-wrapper">
-      <h1>Todo List</h1>
-      <h3>
-        Date: {today.getMonth() + 1}/{today.getDate()}/{today.getFullYear()}
-      </h3>
-      <AddTodoForm onAddTodo={addTodo} />
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="todo-wrapper">
+              <h1>Todo List</h1>
+              <h3>
+                Date: {today.getMonth() + 1}/{today.getDate()}/
+                {today.getFullYear()}
+              </h3>
+              <AddTodoForm onAddTodo={addTodo} />
 
-      {isLoading ? (
-        <p>Loading your todos...</p>
-      ) : (
-        <TodoList
-          todoList={todoList}
-          onRemoveTodo={removeTodo}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      )}
-    </div>
+              {isLoading ? (
+                <p>Loading your todos...</p>
+              ) : (
+                <TodoList
+                  todoList={todoList}
+                  onRemoveTodo={removeTodo}
+                  handleCheckboxChange={handleCheckboxChange}
+                />
+              )}
+            </div>
+          }
+        ></Route>
+        <Route path="/new" element={<h1>New Todo List</h1>}></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
