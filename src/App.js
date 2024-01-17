@@ -163,6 +163,7 @@ function App() {
           path="/"
           element={
             <div className="todo-wrapper">
+              <img src="images/mountains.jpg" alt="" />
               <h1>Todo List</h1>
               <h3>
                 Date: {today.getMonth() + 1}/{today.getDate()}/
