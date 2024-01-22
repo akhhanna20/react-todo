@@ -1,0 +1,39 @@
+.ListItem {
+  background-color: #d8b8fc;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  padding-left: 15px;
+}
+input[type="checkbox"] {
+  /* accent-color: rgb(139, 139, 139); */
+  width: 15px;
+  height: 15px;
+}
+.Description {
+  flex-grow: 1;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.IconDelete {
+  font-size: 20px;
+  cursor: pointer;
+}
+.IconzDelete:hover {
+  color: red;
+}
+
+.Close {
+  color: #b0b0b0;
+  text-decoration: line-through;
+  flex-grow: 1;
+  margin-right: 10px;
+  margin-left: 10px;
+}
