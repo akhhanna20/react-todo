@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import TodoList from "./TodoList";
-import AddTodoForm from "./AddTodoForm";
+import TodoList from "./components/TodoList";
+import AddTodoForm from "./components/AddTodoForm";
 import "./app.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 function App() {
   const today = new Date();
 
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dragId, setDragId] = useState();
 
   //To GET data from Airtable
   const fetchData = async () => {
@@ -85,8 +86,10 @@ function App() {
     const airtableDataToUpdate = {
       fields: {
         done: !updTodo.done,
+        title: updTodo.title,
       },
     };
+
     const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
     const options = {
       method: "PATCH",
@@ -133,6 +136,15 @@ function App() {
     }
   };
 
+  // //To reorder items
+  // const reorderItems = (newTodoList) => {
+  //   const newItems = newTodoList.map((todo, index) => {
+  //     todo.order = index;
+  //     return todo;
+  //   });
+  //   setTodoList(newItems);
+  // };
+
   //Function to add new todo to the list
   const addTodo = async (newTodo) => {
     console.log("newTodo", newTodo);
@@ -143,13 +155,59 @@ function App() {
   const removeTodo = async (id) => {
     await deleteTodo(id);
     await fetchData();
+    // reorderItems();
   };
 
   //Handler for checkbox(done/undone)
   const handleCheckboxChange = async (id) => {
     const updTodo = todoList.find((todo) => todo.id === id);
+    console.log("upd", updTodo);
     await changeTodo(id, updTodo);
     await fetchData();
+  };
+
+  //To edit data
+  const updateNewTitle = async (id, newTitle) => {
+    const updatedTodoList = todoList.map((todo) =>
+      todo.id === id ? { ...todo, title: newTitle } : todo
+    );
+    console.log("updList", updatedTodoList);
+    setTodoList(updatedTodoList);
+    const updTodo = updatedTodoList.find((todo) => todo.id === id);
+    await changeTodo(id, updTodo);
+  };
+
+  //To handle drag
+  const handleDrag = (event) => {
+    setDragId(event.currentTarget.id);
+
+    console.log("dragID", event.currentTarget.id);
+    console.log("dragIDTYPE", typeof event.currentTarget.id);
+  };
+  //To handle drop
+  const handleDrop = (event) => {
+    const dragBoxIndex = todoList.findIndex(
+      (todo) => todo.id.toString() === dragId
+    );
+    console.log("drag", dragBoxIndex);
+    const dropBoxIndex = todoList.findIndex(
+      (todo) => todo.id.toString() === event.currentTarget.id
+    );
+
+    console.log("dropInd", dropBoxIndex);
+    console.log("dropID", event.currentTarget.id);
+
+    const newTodoState = todoList.map((todo) => {
+      if (todo.id.toString() === dragId) {
+        todo.order = dropBoxIndex;
+      }
+      if (todo.id.toString() === event.currentTarget.id) {
+        todo.order = dragBoxIndex;
+      }
+      return todo;
+    });
+
+    setTodoList(newTodoState);
   };
 
   useEffect(() => {
@@ -158,12 +216,22 @@ function App() {
 
   return (
     <BrowserRouter>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/new">New</Link>
+      </nav>
       <Routes>
         <Route
           path="/"
           element={
             <div className="todo-wrapper">
-              <img src="images/mountains.jpg" alt="mountains" />
+              <div className="image-container">
+                <img src="images/mountains.jpg" alt="mountains" />
+                <div className="bottom-right">
+                  All your dreams can come true if you have the courage to
+                  pursue them
+                </div>
+              </div>
               <h1>Todo List</h1>
               <h3>
                 Date: {today.getMonth() + 1}/{today.getDate()}/
@@ -178,6 +246,9 @@ function App() {
                   todoList={todoList}
                   onRemoveTodo={removeTodo}
                   handleCheckboxChange={handleCheckboxChange}
+                  handleDrag={handleDrag}
+                  handleDrop={handleDrop}
+                  onUpdateNewTitle={updateNewTitle}
                 />
               )}
             </div>

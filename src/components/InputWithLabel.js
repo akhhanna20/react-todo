@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 
 function InputWithLabel({ name, id, value, handleTitleChange, children }) {
+  InputWithLabel.propTypes = {
+    name: PropTypes.string,
+    id: PropTypes.string,
+    value: PropTypes.string,
+    handleTitleChange: PropTypes.func,
+  };
   const inputRef = React.useRef();
   useEffect(() => {
     inputRef.current.focus();
