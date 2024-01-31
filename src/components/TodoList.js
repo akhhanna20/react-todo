@@ -11,10 +11,15 @@ function TodoList({
   id,
   onUpdateNewTitle,
 }) {
-  TodoList.propType = {
+  //Type-checking tool for props
+  TodoList.propTypes = {
     todoList: PropTypes.array,
     onRemoveTodo: PropTypes.func,
     handleCheckboxChange: PropTypes.func,
+    handleDrag: PropTypes.func,
+    handleDrop: PropTypes.func,
+    id: PropTypes.string,
+    onUpdateNewTitle: PropTypes.func,
   };
 
   return (

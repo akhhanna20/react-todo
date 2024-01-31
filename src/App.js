@@ -65,15 +65,13 @@ function App() {
 
     try {
       const response = await fetch(url, options);
-      console.log("resp", response.json());
+      // console.log("resp", response.json());
 
       if (!response.ok) {
         const message = `Error has ocured: ${response.status}`;
         throw new Error(message);
       }
-      const dataResponse = await response.json();
-      console.log(", data1", dataResponse);
-
+      const dataResponse = response;
       return dataResponse;
     } catch (error) {
       console.log(error.message);
@@ -147,7 +145,6 @@ function App() {
 
   //Function to add new todo to the list
   const addTodo = async (newTodo) => {
-    console.log("newTodo", newTodo);
     await postTodo(newTodo);
     await fetchData();
   };
@@ -155,13 +152,11 @@ function App() {
   const removeTodo = async (id) => {
     await deleteTodo(id);
     await fetchData();
-    // reorderItems();
   };
 
   //Handler for checkbox(done/undone)
   const handleCheckboxChange = async (id) => {
     const updTodo = todoList.find((todo) => todo.id === id);
-    console.log("upd", updTodo);
     await changeTodo(id, updTodo);
     await fetchData();
   };
@@ -181,21 +176,18 @@ function App() {
   const handleDrag = (event) => {
     setDragId(event.currentTarget.id);
 
-    console.log("dragID", event.currentTarget.id);
-    console.log("dragIDTYPE", typeof event.currentTarget.id);
+    // console.log("dragID", event.currentTarget.id);
+    // console.log("dragIDTYPE", typeof event.currentTarget.id);
   };
   //To handle drop
   const handleDrop = (event) => {
     const dragBoxIndex = todoList.findIndex(
       (todo) => todo.id.toString() === dragId
     );
-    console.log("drag", dragBoxIndex);
+
     const dropBoxIndex = todoList.findIndex(
       (todo) => todo.id.toString() === event.currentTarget.id
     );
-
-    console.log("dropInd", dropBoxIndex);
-    console.log("dropID", event.currentTarget.id);
 
     const newTodoState = todoList.map((todo) => {
       if (todo.id.toString() === dragId) {

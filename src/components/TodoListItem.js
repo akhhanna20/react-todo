@@ -13,9 +13,9 @@ function TodoListItem({
   handleDrag,
   handleDrop,
   onUpdateNewTitle,
-  id,
 }) {
-  TodoListItem.propType = {
+  //Type-checking tool for props
+  TodoListItem.propTypes = {
     todo: PropTypes.string,
     onRemoveTodo: PropTypes.func,
     listItem: PropTypes.object,
@@ -36,7 +36,7 @@ function TodoListItem({
     onUpdateNewTitle(listItem.id, newTitle);
     setEdit(false);
   };
-  console.log("newT", newTitle);
+
   return (
     <li
       className={styles.ListItem}
@@ -49,7 +49,6 @@ function TodoListItem({
       <div>
         <input
           type="checkbox"
-          id="listItem"
           name="listIitem"
           checked={listItem.done}
           onChange={() => handleCheckboxChange(listItem.id)}
@@ -57,7 +56,12 @@ function TodoListItem({
       </div>
 
       {edit ? (
-        <input value={newTitle} onChange={handleTitleChange} />
+        <input
+          name="titleToChange"
+          className={styles.InputToChange}
+          value={newTitle}
+          onChange={handleTitleChange}
+        />
       ) : (
         <div className={listItem.done ? styles.Close : styles.Description}>
           {todo}

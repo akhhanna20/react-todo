@@ -3,6 +3,7 @@ import InputWithLabel from "./InputWithLabel";
 import PropTypes from "prop-types";
 
 function AddTodoForm({ onAddTodo }) {
+  //Type-checking tool for props
   AddTodoForm.propTypes = {
     onAddTodo: PropTypes.func,
   };
