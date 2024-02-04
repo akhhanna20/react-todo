@@ -5,6 +5,15 @@ import { CiEdit } from "react-icons/ci";
 import { TfiSave } from "react-icons/tfi";
 import PropTypes from "prop-types";
 
+//Type-checking tool for props
+TodoListItem.propTypes = {
+  todo: PropTypes.string.isRequired,
+  onRemoveTodo: PropTypes.func.isRequired,
+  listItem: PropTypes.object.isRequired,
+  handleCheckboxChange: PropTypes.func.isRequired,
+  onUpdateNewTitle: PropTypes.func.isRequired,
+};
+
 function TodoListItem({
   todo,
   onRemoveTodo,
@@ -14,15 +23,6 @@ function TodoListItem({
   handleDrop,
   onUpdateNewTitle,
 }) {
-  //Type-checking tool for props
-  TodoListItem.propTypes = {
-    todo: PropTypes.string,
-    onRemoveTodo: PropTypes.func,
-    listItem: PropTypes.object,
-    handleCheckboxChange: PropTypes.func,
-    onUpdateNewTitle: PropTypes.func,
-  };
-
   const [edit, setEdit] = useState(false);
   const [newTitle, setNewTitle] = useState(todo);
 

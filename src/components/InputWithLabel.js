@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
-function InputWithLabel({ name, id, value, handleTitleChange, children }) {
-  //Type-checking tool for props
-  InputWithLabel.propTypes = {
-    name: PropTypes.string,
-    id: PropTypes.string,
-    value: PropTypes.string,
-    handleTitleChange: PropTypes.func,
-  };
+//Type-checking tool for props
+InputWithLabel.propTypes = {
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  handleTitleChange: PropTypes.func.isRequired,
+};
 
+function InputWithLabel({ name, id, value, handleTitleChange, children }) {
   const inputRef = React.useRef();
   useEffect(() => {
     inputRef.current.focus();
