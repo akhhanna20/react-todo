@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "../app.css";
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 
 const baseUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/`;
 
 function TodoContainer({ tableName }) {
-  console.log("TN", tableName);
   const today = new Date();
 
   const [todoList, setTodoList] = useState([]);
@@ -22,10 +21,10 @@ function TodoContainer({ tableName }) {
         Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
       },
     };
-    const url = `${baseUrl}${tableName}`;
+    const url = `${baseUrl}${tableName}?view=Grid%20view`;
 
     try {
-      // setIsLoading(true);
+      //setIsLoading(true);
       const response = await fetch(url, options);
 
       if (!response.ok) {
