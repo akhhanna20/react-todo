@@ -21,13 +21,31 @@ input[type="checkbox"] {
   margin-right: 10px;
   margin-left: 10px;
 }
-
+.IitemButtonContainer {
+  display: flex;
+  gap: 0.5rem;
+}
 .IconDelete {
   font-size: 20px;
   cursor: pointer;
+  align-items: center;
 }
-.IconzDelete:hover {
+.IconDelete:hover {
   color: red;
+}
+.IconEdit {
+  font-size: 24px;
+  cursor: pointer;
+  align-items: center;
+}
+
+.IconSave {
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+}
+.IconSave:hover {
+  color: rgb(11, 202, 97);
 }
 
 .Close {
@@ -36,4 +54,11 @@ input[type="checkbox"] {
   flex-grow: 1;
   margin-right: 10px;
   margin-left: 10px;
+}
+.InputToChange {
+  width: 80%;
+  border: none;
+  height: 25px;
+  font-size: 16px;
+  background-color: #f8f4fb;
 }

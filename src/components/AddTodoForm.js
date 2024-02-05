@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import InputWithLabel from "./InputWithLabel";
+import PropTypes from "prop-types";
 
+//Type-checking tool for props
+AddTodoForm.propTypes = {
+  onAddTodo: PropTypes.func.isRequired,
+};
 function AddTodoForm({ onAddTodo }) {
   //State for New Todo title from input
   const [todoTitle, setTodoTitle] = useState("");

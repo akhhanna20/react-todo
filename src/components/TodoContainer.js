@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import TodoList from "./components/TodoList";
-import AddTodoForm from "./components/AddTodoForm";
-import "./app.css";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import TodoList from "./TodoList";
+import AddTodoForm from "./AddTodoForm";
+import "../app.css";
+import { Link } from "react-router-dom";
 
-function App() {
+const baseUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/`;
+
+function TodoContainer({ tableName }) {
+  console.log("TN", tableName);
   const today = new Date();
 
   const [todoList, setTodoList] = useState([]);
@@ -19,9 +22,10 @@ function App() {
         Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
       },
     };
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
+    const url = `${baseUrl}${tableName}`;
 
     try {
+      // setIsLoading(true);
       const response = await fetch(url, options);
 
       if (!response.ok) {
@@ -61,7 +65,7 @@ function App() {
       },
       body: JSON.stringify(airtableData),
     };
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
+    const url = `${baseUrl}${tableName}`;
 
     try {
       const response = await fetch(url, options);
@@ -88,7 +92,7 @@ function App() {
       },
     };
 
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
+    const url = `${baseUrl}${tableName}/${id}`;
     const options = {
       method: "PATCH",
       headers: {
@@ -113,7 +117,7 @@ function App() {
   };
 
   const deleteTodo = async (id) => {
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
+    const url = `${baseUrl}${tableName}/${id}`;
 
     try {
       const response = await fetch(url, {
@@ -204,52 +208,42 @@ function App() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [tableName]);
 
   return (
-    <BrowserRouter>
-      <nav>
+    <>
+      {/* <nav>
         <Link to="/">Home</Link>
         <Link to="/new">New</Link>
-      </nav>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="todo-wrapper">
-              <div className="image-container">
-                <img src="images/mountains.jpg" alt="mountains" />
-                <div className="bottom-right">
-                  All your dreams can come true if you have the courage to
-                  pursue them
-                </div>
-              </div>
-              <h1>Todo List</h1>
-              <h3>
-                Date: {today.getMonth() + 1}/{today.getDate()}/
-                {today.getFullYear()}
-              </h3>
-              <AddTodoForm onAddTodo={addTodo} />
+      </nav> */}
+      <div className="todo-wrapper">
+        <div className="image-container">
+          <img src="images/mountains.jpg" alt="mountains" />
+          <div className="bottom-right">
+            All your dreams can come true if you have the courage to pursue them
+          </div>
+        </div>
+        <h1>Todo List</h1>
+        <h3>
+          Date: {today.getMonth() + 1}/{today.getDate()}/{today.getFullYear()}
+        </h3>
+        <AddTodoForm onAddTodo={addTodo} />
 
-              {isLoading ? (
-                <p>Loading your todos...</p>
-              ) : (
-                <TodoList
-                  todoList={todoList}
-                  onRemoveTodo={removeTodo}
-                  handleCheckboxChange={handleCheckboxChange}
-                  handleDrag={handleDrag}
-                  handleDrop={handleDrop}
-                  onUpdateNewTitle={updateNewTitle}
-                />
-              )}
-            </div>
-          }
-        ></Route>
-        <Route path="/new" element={<h1>New Todo List</h1>}></Route>
-      </Routes>
-    </BrowserRouter>
+        {isLoading ? (
+          <p>Loading your todos...</p>
+        ) : (
+          <TodoList
+            todoList={todoList}
+            onRemoveTodo={removeTodo}
+            handleCheckboxChange={handleCheckboxChange}
+            handleDrag={handleDrag}
+            handleDrop={handleDrop}
+            onUpdateNewTitle={updateNewTitle}
+          />
+        )}
+      </div>
+    </>
   );
 }
 
-export default App;
+export default TodoContainer;
