@@ -21,7 +21,7 @@ function TodoContainer({ tableName }) {
         Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
       },
     };
-    const url = `${baseUrl}${tableName}?view=Grid%20view`;
+    const url = `${baseUrl}${tableName}?sort[0][field]=title&sort[0][direction]=asc`;
 
     try {
       //setIsLoading(true);
