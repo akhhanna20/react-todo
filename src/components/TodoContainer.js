@@ -21,10 +21,9 @@ function TodoContainer({ tableName }) {
         Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
       },
     };
-    const url = `${baseUrl}${tableName}?sort[0][field]=title&sort[0][direction]=asc`;
+    const url = `${baseUrl}${tableName}`;
 
     try {
-      //setIsLoading(true);
       const response = await fetch(url, options);
 
       if (!response.ok) {
@@ -33,7 +32,17 @@ function TodoContainer({ tableName }) {
       }
 
       const todosFromAPI = await response.json();
-      const todos = todosFromAPI.records.map((todo) => {
+      const sortTodosByField = (objectA, objectB) => {
+        if (objectA.fields.title < objectB.fields.title) {
+          return -1;
+        }
+        if (objectA.fields.title > objectB.fields.title) {
+          return 1;
+        }
+        return 0;
+      };
+
+      const todos = todosFromAPI.records.sort(sortTodosByField).map((todo) => {
         const newTodo = {
           id: todo.id,
           title: todo.fields.title,
@@ -86,7 +95,7 @@ function TodoContainer({ tableName }) {
   const changeTodo = async (id, updTodo) => {
     const airtableDataToUpdate = {
       fields: {
-        done: !updTodo.done,
+        done: updTodo.done,
         title: updTodo.title,
       },
     };
@@ -160,6 +169,7 @@ function TodoContainer({ tableName }) {
   //Handler for checkbox(done/undone)
   const handleCheckboxChange = async (id) => {
     const updTodo = todoList.find((todo) => todo.id === id);
+    updTodo.done = !updTodo.done;
     await changeTodo(id, updTodo);
     await fetchData();
   };
