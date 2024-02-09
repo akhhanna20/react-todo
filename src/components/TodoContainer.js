@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "../app.css";
+//import Sorting from "./Sorting";
 
 //import { Link } from "react-router-dom";
 
@@ -13,6 +14,38 @@ function TodoContainer({ tableName }) {
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dragId, setDragId] = useState();
+  const [ascSort, setAscSort] = useState(true);
+
+  const sortTodosByFieldAsc = (objectA, objectB) => {
+    if (
+      objectA.fields.title.toUpperCase() < objectB.fields.title.toUpperCase()
+    ) {
+      return -1;
+    }
+    if (
+      objectA.fields.title.toUpperCase() > objectB.fields.title.toUpperCase()
+    ) {
+      return 1;
+    }
+    return 0;
+  };
+  const toggle = () => {
+    setAscSort(!ascSort);
+  };
+
+  const sortTodosByFieldDsc = (objectA, objectB) => {
+    if (
+      objectA.fields.title.toUpperCase() < objectB.fields.title.toUpperCase()
+    ) {
+      return 1;
+    }
+    if (
+      objectA.fields.title.toUpperCase() > objectB.fields.title.toUpperCase()
+    ) {
+      return -1;
+    }
+    return 0;
+  };
 
   //To GET data from Airtable
   const fetchData = useCallback(async () => {
@@ -33,30 +66,23 @@ function TodoContainer({ tableName }) {
       }
 
       const todosFromAPI = await response.json();
-      const sortTodosByField = (objectA, objectB) => {
-        if (objectA.fields.title < objectB.fields.title) {
-          return -1;
-        }
-        if (objectA.fields.title > objectB.fields.title) {
-          return 1;
-        }
-        return 0;
-      };
 
-      const todos = todosFromAPI.records.sort(sortTodosByField).map((todo) => {
-        const newTodo = {
-          id: todo.id,
-          title: todo.fields.title,
-          done: Boolean(todo.fields.done),
-        };
-        return newTodo;
-      });
+      const todos = todosFromAPI.records
+        .sort(ascSort ? sortTodosByFieldAsc : sortTodosByFieldDsc)
+        .map((todo) => {
+          const newTodo = {
+            id: todo.id,
+            title: todo.fields.title,
+            done: Boolean(todo.fields.done),
+          };
+          return newTodo;
+        });
       setTodoList(todos);
       setIsLoading(false);
     } catch (error) {
       console.log(error.message);
     }
-  }, [tableName]);
+  }, [tableName, ascSort]);
 
   useEffect(() => {
     fetchData();
@@ -239,17 +265,29 @@ function TodoContainer({ tableName }) {
         </h3>
         <AddTodoForm onAddTodo={addTodo} />
 
+        {ascSort ? (
+          <button className="toggle-btn" onClick={toggle}>
+            ▲
+          </button>
+        ) : (
+          <button className="toggle-btn" onClick={toggle}>
+            ▼
+          </button>
+        )}
+
         {isLoading ? (
           <p>Loading your todos...</p>
         ) : (
-          <TodoList
-            todoList={todoList}
-            onRemoveTodo={removeTodo}
-            handleCheckboxChange={handleCheckboxChange}
-            handleDrag={handleDrag}
-            handleDrop={handleDrop}
-            onUpdateNewTitle={updateNewTitle}
-          />
+          <>
+            <TodoList
+              todoList={todoList}
+              onRemoveTodo={removeTodo}
+              handleCheckboxChange={handleCheckboxChange}
+              handleDrag={handleDrag}
+              handleDrop={handleDrop}
+              onUpdateNewTitle={updateNewTitle}
+            />
+          </>
         )}
       </div>
     </>
