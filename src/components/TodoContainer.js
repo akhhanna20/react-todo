@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "../app.css";
+
 //import { Link } from "react-router-dom";
 
 const baseUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/`;
@@ -14,7 +15,7 @@ function TodoContainer({ tableName }) {
   const [dragId, setDragId] = useState();
 
   //To GET data from Airtable
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const options = {
       method: "GET",
       headers: {
@@ -55,7 +56,11 @@ function TodoContainer({ tableName }) {
     } catch (error) {
       console.log(error.message);
     }
-  };
+  }, [tableName]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, tableName]);
 
   //To add data to Airtable
   const postTodo = async (newTodo) => {
@@ -215,10 +220,6 @@ function TodoContainer({ tableName }) {
     setTodoList(newTodoState);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [tableName]);
-
   return (
     <>
       {/* <nav>
@@ -232,7 +233,7 @@ function TodoContainer({ tableName }) {
             All your dreams can come true if you have the courage to pursue them
           </div>
         </div>
-        <h1>Todo List</h1>
+        <h1>{tableName}</h1>
         <h3>
           Date: {today.getMonth() + 1}/{today.getDate()}/{today.getFullYear()}
         </h3>

@@ -1,5 +1,5 @@
 .ListItem {
-  background-color: #d8b8fc;
+  background-color: #ffffff;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -12,10 +12,13 @@
   padding-left: 15px;
 }
 input[type="checkbox"] {
-  /* accent-color: rgb(139, 139, 139); */
+  accent-color: #05e580;
+  cursor: pointer;
   width: 15px;
   height: 15px;
+  opacity: 0.6;
 }
+
 .Description {
   flex-grow: 1;
   margin-right: 10px;

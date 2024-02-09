@@ -1,11 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap");
 html,
 body {
   height: 100%;
   font-family: "Roboto", sans-serif;
-  background-color: rgb(96, 74, 135);
+
+  background-color: #616193;
   background-image: linear-gradient(
-      rgba(255, 255, 255, 0.329) 2px,
+      rgba(255, 255, 255, 0.312) 2px,
       transparent 2px
     ),
     linear-gradient(90deg, rgba(255, 255, 255, 0.309) 2px, transparent 2px),
@@ -16,26 +18,72 @@ body {
 
   overflow: hidden;
 }
+footer {
+  position: fixed;
+  display: flex;
+  text-align: center;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  margin-top: 20px;
+}
+.footer-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+
+  background: #e1e1ec;
+  font-size: 1.125rem;
+  color: rgb(216, 216, 231);
+  padding-left: 40px;
+  padding-right: 20px;
+  margin-top: 20px;
+  width: 100vw;
+}
+.nav-footer {
+  display: flex;
+}
+/* .p {
+  display: flex;
+} */
+.copyright-socials {
+  display: flex;
+
+  justify-content: space-between;
+  text-align: center;
+  margin: 0 auto;
+}
+.socials-footer {
+  display: flex;
+  gap: 2rem;
+}
+.social-footer {
+  justify-content: center;
+}
 
 p {
-  color: red;
+  color: rgb(2, 2, 2);
+  margin-top: 20px;
 }
 h1 {
   margin-bottom: 0px;
   text-align: center;
-  font-weight: 1000;
-  color: rgb(245, 30, 30);
+
+  color: rgb(223, 77, 19);
+  font-family: "Delicious Handrawn", cursive;
+  font-size: 55px;
   user-select: none;
 }
 h3 {
   text-align: center;
   user-select: none;
   margin-top: 14px;
+
   /* margin-bottom: 40px; */
 }
 
 .todo-wrapper {
-  background: #f3eafe;
+  background: #e1e1ec;
   display: flex;
   flex-direction: column;
   padding: 2%;
@@ -43,6 +91,7 @@ h3 {
   margin-left: auto;
   margin-right: auto;
   margin-top: 3%;
+  margin-bottom: 20px;
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0px 5px 8px rgb(112, 108, 104);
@@ -68,25 +117,25 @@ h3 {
 }
 
 .todo-input-item input:focus {
-  outline: 2px solid rgb(1, 247, 132);
+  outline: 2px solid#50ee75;
 }
 
 .primary-btn {
-  background-color: rgb(1, 247, 132);
+  background-color: #04ee85;
   color: black;
   border: none;
-  border-radius: 8px;
+
   margin-left: 5px;
   padding: 10px;
   width: 65px;
-  height: 35px;
+  height: 36px;
   cursor: pointer;
 }
 .primary-btn:hover {
   background-color: rgb(4, 196, 106);
 }
 .primary-btn:active {
-  background-color: rgb(1, 247, 132);
+  background-color: #04ee85;
 }
 
 .todo-list {
@@ -108,7 +157,7 @@ h3 {
 }
 /* Bottom right text */
 .bottom-right {
-  color: #ecd5fa;
+  color: #d6d7d8;
   font-family: cursive;
   text-shadow: 2px 1px #6d2323;
   position: absolute;
@@ -117,6 +166,34 @@ h3 {
 }
 nav > a {
   color: white;
+  text-decoration: none;
+}
+.select-container {
+  margin-top: 10px;
+  text-align: end;
+}
+.link {
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.1rem;
+}
+
+.landing-btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+}
+.landing-btn {
+  background-color: #04ee85;
+  color: black;
+  border: none;
+  margin-left: 5px;
+  padding: 10px;
+  width: 140px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 15px;
 }
 
 @media (width < 600px) {
@@ -144,6 +221,6 @@ nav > a {
 /* Media Query for Large screens */
 @media (min-width: 1281px) {
   .todo-wrapper {
-    width: 70%;
+    width: 60%;
   }
 }
