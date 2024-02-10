@@ -9,21 +9,24 @@ function App() {
   const thisYear = today.getFullYear();
   return (
     <>
-      <BrowserRouter>
-        <nav className="link">
-          <Link to="/home">Home</Link>
-          <Link to="/">TodoList</Link>
-        </nav>
-        <Routes>
-          <Route path="/" element={<TableChooser />} />
+      <div className="main">
+        <BrowserRouter>
+          <nav className="link">
+            <Link to="/home">Home</Link>
+            <Link to="/">TodoList</Link>
+          </nav>
+          <Routes>
+            <Route path="/" element={<TableChooser />} />
 
-          <Route path="/home" element={<LandingPage />} />
-          <Route
-            path="/newList"
-            element={<TodoContainer tableName={"NewTodoList"} />}
-          />
-        </Routes>
-      </BrowserRouter>
+            <Route path="/home" element={<LandingPage />} />
+            <Route
+              path="/newList"
+              element={<TodoContainer tableName={"NewTodoList"} />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </div>
+
       <footer>
         <div className="footer-container">
           <nav className="nav-footer">

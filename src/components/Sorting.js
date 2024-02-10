@@ -1,22 +1,20 @@
 import React, { useState } from "react";
 
-function Sorting() {
+function Sorting(onToggle) {
   const [ascSort, setAscSort] = useState(true);
 
-  const toggleSortingAsc = () => {
-    setAscSort(false);
+  const toggleT = () => {
+    onToggle(setAscSort(ascSort));
   };
-  const toggleSortingDsc = () => {
-    setAscSort(true);
-  };
+
   return (
     <>
       {ascSort ? (
-        <button className="primary-btn" onClick={toggleSortingAsc}>
+        <button className="primary-btn" onClick={toggleT}>
           ▲
         </button>
       ) : (
-        <button className="primary-btn" onClick={toggleSortingDsc}>
+        <button className="primary-btn" onClick={toggleT}>
           ▼
         </button>
       )}

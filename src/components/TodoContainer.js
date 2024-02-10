@@ -2,9 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "../app.css";
-//import Sorting from "./Sorting";
-
-//import { Link } from "react-router-dom";
 
 const baseUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/`;
 
@@ -29,6 +26,7 @@ function TodoContainer({ tableName }) {
     }
     return 0;
   };
+
   const toggle = () => {
     setAscSort(!ascSort);
   };
@@ -108,8 +106,6 @@ function TodoContainer({ tableName }) {
 
     try {
       const response = await fetch(url, options);
-      // console.log("resp", response.json());
-
       if (!response.ok) {
         const message = `Error has ocured: ${response.status}`;
         throw new Error(message);
@@ -130,7 +126,6 @@ function TodoContainer({ tableName }) {
         title: updTodo.title,
       },
     };
-
     const url = `${baseUrl}${tableName}/${id}`;
     const options = {
       method: "PATCH",
@@ -140,10 +135,8 @@ function TodoContainer({ tableName }) {
       },
       body: JSON.stringify(airtableDataToUpdate),
     };
-
     try {
       const response = await fetch(url, options);
-
       if (!response.ok) {
         throw new Error(`Error has occurred: ${response.status}`);
       }
@@ -157,7 +150,6 @@ function TodoContainer({ tableName }) {
 
   const deleteTodo = async (id) => {
     const url = `${baseUrl}${tableName}/${id}`;
-
     try {
       const response = await fetch(url, {
         method: "DELETE",
@@ -176,15 +168,6 @@ function TodoContainer({ tableName }) {
       return null;
     }
   };
-
-  // //To reorder items
-  // const reorderItems = (newTodoList) => {
-  //   const newItems = newTodoList.map((todo, index) => {
-  //     todo.order = index;
-  //     return todo;
-  //   });
-  //   setTodoList(newItems);
-  // };
 
   //Function to add new todo to the list
   const addTodo = async (newTodo) => {
@@ -219,16 +202,12 @@ function TodoContainer({ tableName }) {
   //To handle drag
   const handleDrag = (event) => {
     setDragId(event.currentTarget.id);
-
-    // console.log("dragID", event.currentTarget.id);
-    // console.log("dragIDTYPE", typeof event.currentTarget.id);
   };
   //To handle drop
   const handleDrop = (event) => {
     const dragBoxIndex = todoList.findIndex(
       (todo) => todo.id.toString() === dragId
     );
-
     const dropBoxIndex = todoList.findIndex(
       (todo) => todo.id.toString() === event.currentTarget.id
     );
@@ -248,13 +227,9 @@ function TodoContainer({ tableName }) {
 
   return (
     <>
-      {/* <nav>
-        <Link to="/">Home</Link>
-        <Link to="/new">New</Link>
-      </nav> */}
       <div className="todo-wrapper">
         <div className="image-container">
-          <img src="images/mountains.jpg" alt="mountains" />
+          <img src="images/ocean-4007309_1280.jpg" alt="mountains" />
           <div className="bottom-right">
             All your dreams can come true if you have the courage to pursue them
           </div>
