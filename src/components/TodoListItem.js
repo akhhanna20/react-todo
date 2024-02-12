@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GoTrash } from "react-icons/go";
 import styles from "./TodoListItem.module.css";
 import { CiEdit } from "react-icons/ci";
@@ -36,7 +36,12 @@ function TodoListItem({
     onUpdateNewTitle(listItem.id, newTitle);
     setEdit(false);
   };
-
+  const inputRef = useRef();
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  });
   return (
     <li
       className={styles.ListItem}
@@ -57,6 +62,7 @@ function TodoListItem({
 
       {edit ? (
         <input
+          ref={inputRef}
           name="titleToChange"
           className={styles.InputToChange}
           value={newTitle}

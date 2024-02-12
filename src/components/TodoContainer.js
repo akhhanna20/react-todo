@@ -1,21 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
 import "../app.css";
-import { Link } from "react-router-dom";
 
 const baseUrl = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/`;
 
 function TodoContainer({ tableName }) {
-  console.log("TN", tableName);
   const today = new Date();
 
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dragId, setDragId] = useState();
+  const [ascSort, setAscSort] = useState(true);
+
+  const sortTodosByFieldAsc = (objectA, objectB) => {
+    if (
+      objectA.fields.title.toUpperCase() < objectB.fields.title.toUpperCase()
+    ) {
+      return -1;
+    }
+    if (
+      objectA.fields.title.toUpperCase() > objectB.fields.title.toUpperCase()
+    ) {
+      return 1;
+    }
+    return 0;
+  };
+
+  const toggle = () => {
+    setAscSort(!ascSort);
+  };
+
+  const sortTodosByFieldDsc = (objectA, objectB) => {
+    if (
+      objectA.fields.title.toUpperCase() < objectB.fields.title.toUpperCase()
+    ) {
+      return 1;
+    }
+    if (
+      objectA.fields.title.toUpperCase() > objectB.fields.title.toUpperCase()
+    ) {
+      return -1;
+    }
+    return 0;
+  };
 
   //To GET data from Airtable
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const options = {
       method: "GET",
       headers: {
@@ -25,7 +56,6 @@ function TodoContainer({ tableName }) {
     const url = `${baseUrl}${tableName}`;
 
     try {
-      // setIsLoading(true);
       const response = await fetch(url, options);
 
       if (!response.ok) {
@@ -34,20 +64,27 @@ function TodoContainer({ tableName }) {
       }
 
       const todosFromAPI = await response.json();
-      const todos = todosFromAPI.records.map((todo) => {
-        const newTodo = {
-          id: todo.id,
-          title: todo.fields.title,
-          done: Boolean(todo.fields.done),
-        };
-        return newTodo;
-      });
+
+      const todos = todosFromAPI.records
+        .sort(ascSort ? sortTodosByFieldAsc : sortTodosByFieldDsc)
+        .map((todo) => {
+          const newTodo = {
+            id: todo.id,
+            title: todo.fields.title,
+            done: Boolean(todo.fields.done),
+          };
+          return newTodo;
+        });
       setTodoList(todos);
       setIsLoading(false);
     } catch (error) {
       console.log(error.message);
     }
-  };
+  }, [tableName, ascSort]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, tableName]);
 
   //To add data to Airtable
   const postTodo = async (newTodo) => {
@@ -69,8 +106,6 @@ function TodoContainer({ tableName }) {
 
     try {
       const response = await fetch(url, options);
-      // console.log("resp", response.json());
-
       if (!response.ok) {
         const message = `Error has ocured: ${response.status}`;
         throw new Error(message);
@@ -87,11 +122,10 @@ function TodoContainer({ tableName }) {
   const changeTodo = async (id, updTodo) => {
     const airtableDataToUpdate = {
       fields: {
-        done: !updTodo.done,
+        done: updTodo.done,
         title: updTodo.title,
       },
     };
-
     const url = `${baseUrl}${tableName}/${id}`;
     const options = {
       method: "PATCH",
@@ -101,10 +135,8 @@ function TodoContainer({ tableName }) {
       },
       body: JSON.stringify(airtableDataToUpdate),
     };
-
     try {
       const response = await fetch(url, options);
-
       if (!response.ok) {
         throw new Error(`Error has occurred: ${response.status}`);
       }
@@ -118,7 +150,6 @@ function TodoContainer({ tableName }) {
 
   const deleteTodo = async (id) => {
     const url = `${baseUrl}${tableName}/${id}`;
-
     try {
       const response = await fetch(url, {
         method: "DELETE",
@@ -138,15 +169,6 @@ function TodoContainer({ tableName }) {
     }
   };
 
-  // //To reorder items
-  // const reorderItems = (newTodoList) => {
-  //   const newItems = newTodoList.map((todo, index) => {
-  //     todo.order = index;
-  //     return todo;
-  //   });
-  //   setTodoList(newItems);
-  // };
-
   //Function to add new todo to the list
   const addTodo = async (newTodo) => {
     await postTodo(newTodo);
@@ -161,6 +183,7 @@ function TodoContainer({ tableName }) {
   //Handler for checkbox(done/undone)
   const handleCheckboxChange = async (id) => {
     const updTodo = todoList.find((todo) => todo.id === id);
+    updTodo.done = !updTodo.done;
     await changeTodo(id, updTodo);
     await fetchData();
   };
@@ -179,16 +202,12 @@ function TodoContainer({ tableName }) {
   //To handle drag
   const handleDrag = (event) => {
     setDragId(event.currentTarget.id);
-
-    // console.log("dragID", event.currentTarget.id);
-    // console.log("dragIDTYPE", typeof event.currentTarget.id);
   };
   //To handle drop
   const handleDrop = (event) => {
     const dragBoxIndex = todoList.findIndex(
       (todo) => todo.id.toString() === dragId
     );
-
     const dropBoxIndex = todoList.findIndex(
       (todo) => todo.id.toString() === event.currentTarget.id
     );
@@ -206,40 +225,44 @@ function TodoContainer({ tableName }) {
     setTodoList(newTodoState);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [tableName]);
-
   return (
     <>
-      {/* <nav>
-        <Link to="/">Home</Link>
-        <Link to="/new">New</Link>
-      </nav> */}
       <div className="todo-wrapper">
         <div className="image-container">
-          <img src="images/mountains.jpg" alt="mountains" />
+          <img src="images/ocean-4007309_1280.jpg" alt="mountains" />
           <div className="bottom-right">
             All your dreams can come true if you have the courage to pursue them
           </div>
         </div>
-        <h1>Todo List</h1>
+        <h1>{tableName}</h1>
         <h3>
           Date: {today.getMonth() + 1}/{today.getDate()}/{today.getFullYear()}
         </h3>
         <AddTodoForm onAddTodo={addTodo} />
 
+        {ascSort ? (
+          <button className="toggle-btn" onClick={toggle}>
+            ▲
+          </button>
+        ) : (
+          <button className="toggle-btn" onClick={toggle}>
+            ▼
+          </button>
+        )}
+
         {isLoading ? (
           <p>Loading your todos...</p>
         ) : (
-          <TodoList
-            todoList={todoList}
-            onRemoveTodo={removeTodo}
-            handleCheckboxChange={handleCheckboxChange}
-            handleDrag={handleDrag}
-            handleDrop={handleDrop}
-            onUpdateNewTitle={updateNewTitle}
-          />
+          <>
+            <TodoList
+              todoList={todoList}
+              onRemoveTodo={removeTodo}
+              handleCheckboxChange={handleCheckboxChange}
+              handleDrag={handleDrag}
+              handleDrop={handleDrop}
+              onUpdateNewTitle={updateNewTitle}
+            />
+          </>
         )}
       </div>
     </>

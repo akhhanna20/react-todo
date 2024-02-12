@@ -1,254 +1,69 @@
-import React, { useEffect, useState } from "react";
-import TodoList from "./components/TodoList";
-import AddTodoForm from "./components/AddTodoForm";
 import "./app.css";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import TableChooser from "./TableChooser";
+import LandingPage from "./LandingPage";
+import TodoContainer from "./components/TodoContainer";
 
 function App() {
   const today = new Date();
-
-  const [todoList, setTodoList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dragId, setDragId] = useState();
-
-  //To GET data from Airtable
-  const fetchData = async () => {
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-      },
-    };
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
-
-    try {
-      const response = await fetch(url, options);
-
-      if (!response.ok) {
-        const message = `Error: ${response.status}`;
-        throw new Error(message);
-      }
-
-      const todosFromAPI = await response.json();
-      const todos = todosFromAPI.records.map((todo) => {
-        const newTodo = {
-          id: todo.id,
-          title: todo.fields.title,
-          done: Boolean(todo.fields.done),
-        };
-        return newTodo;
-      });
-      setTodoList(todos);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  //To add data to Airtable
-  const postTodo = async (newTodo) => {
-    const airtableData = {
-      fields: {
-        title: newTodo.title,
-        done: newTodo.done,
-      },
-    };
-    const options = {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(airtableData),
-    };
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/`;
-
-    try {
-      const response = await fetch(url, options);
-      // console.log("resp", response.json());
-
-      if (!response.ok) {
-        const message = `Error has ocured: ${response.status}`;
-        throw new Error(message);
-      }
-      const dataResponse = response;
-      return dataResponse;
-    } catch (error) {
-      console.log(error.message);
-      return null;
-    }
-  };
-
-  //To change data in Airtable
-  const changeTodo = async (id, updTodo) => {
-    const airtableDataToUpdate = {
-      fields: {
-        done: !updTodo.done,
-        title: updTodo.title,
-      },
-    };
-
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
-    const options = {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(airtableDataToUpdate),
-    };
-
-    try {
-      const response = await fetch(url, options);
-
-      if (!response.ok) {
-        throw new Error(`Error has occurred: ${response.status}`);
-      }
-      const todoFromAPI = await response.json();
-      return todoFromAPI;
-    } catch (error) {
-      console.log(error.message);
-      return null;
-    }
-  };
-
-  const deleteTodo = async (id) => {
-    const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}/${id}`;
-
-    try {
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error has occurred: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.log(error.message);
-      return null;
-    }
-  };
-
-  // //To reorder items
-  // const reorderItems = (newTodoList) => {
-  //   const newItems = newTodoList.map((todo, index) => {
-  //     todo.order = index;
-  //     return todo;
-  //   });
-  //   setTodoList(newItems);
-  // };
-
-  //Function to add new todo to the list
-  const addTodo = async (newTodo) => {
-    await postTodo(newTodo);
-    await fetchData();
-  };
-  //Function to remove todo from the list
-  const removeTodo = async (id) => {
-    await deleteTodo(id);
-    await fetchData();
-  };
-
-  //Handler for checkbox(done/undone)
-  const handleCheckboxChange = async (id) => {
-    const updTodo = todoList.find((todo) => todo.id === id);
-    await changeTodo(id, updTodo);
-    await fetchData();
-  };
-
-  //To edit data
-  const updateNewTitle = async (id, newTitle) => {
-    const updatedTodoList = todoList.map((todo) =>
-      todo.id === id ? { ...todo, title: newTitle } : todo
-    );
-    console.log("updList", updatedTodoList);
-    setTodoList(updatedTodoList);
-    const updTodo = updatedTodoList.find((todo) => todo.id === id);
-    await changeTodo(id, updTodo);
-  };
-
-  //To handle drag
-  const handleDrag = (event) => {
-    setDragId(event.currentTarget.id);
-
-    // console.log("dragID", event.currentTarget.id);
-    // console.log("dragIDTYPE", typeof event.currentTarget.id);
-  };
-  //To handle drop
-  const handleDrop = (event) => {
-    const dragBoxIndex = todoList.findIndex(
-      (todo) => todo.id.toString() === dragId
-    );
-
-    const dropBoxIndex = todoList.findIndex(
-      (todo) => todo.id.toString() === event.currentTarget.id
-    );
-
-    const newTodoState = todoList.map((todo) => {
-      if (todo.id.toString() === dragId) {
-        todo.order = dropBoxIndex;
-      }
-      if (todo.id.toString() === event.currentTarget.id) {
-        todo.order = dragBoxIndex;
-      }
-      return todo;
-    });
-
-    setTodoList(newTodoState);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
+  const thisYear = today.getFullYear();
   return (
-    <BrowserRouter>
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/new">New</Link>
-      </nav>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="todo-wrapper">
-              <div className="image-container">
-                <img src="images/mountains.jpg" alt="mountains" />
-                <div className="bottom-right">
-                  All your dreams can come true if you have the courage to
-                  pursue them
-                </div>
-              </div>
-              <h1>Todo List</h1>
-              <h3>
-                Date: {today.getMonth() + 1}/{today.getDate()}/
-                {today.getFullYear()}
-              </h3>
-              <AddTodoForm onAddTodo={addTodo} />
+    <>
+      <div className="main">
+        <BrowserRouter>
+          <nav className="link">
+            <Link to="/home">Home</Link>
+            <Link to="/">TodoList</Link>
+          </nav>
+          <Routes>
+            <Route path="/" element={<TableChooser />} />
 
-              {isLoading ? (
-                <p>Loading your todos...</p>
-              ) : (
-                <TodoList
-                  todoList={todoList}
-                  onRemoveTodo={removeTodo}
-                  handleCheckboxChange={handleCheckboxChange}
-                  handleDrag={handleDrag}
-                  handleDrop={handleDrop}
-                  onUpdateNewTitle={updateNewTitle}
-                />
-              )}
-            </div>
-          }
-        ></Route>
-        <Route path="/new" element={<h1>New Todo List</h1>}></Route>
-      </Routes>
-    </BrowserRouter>
+            <Route path="/home" element={<LandingPage />} />
+            <Route
+              path="/newList"
+              element={<TodoContainer tableName={"NewTodoList"} />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </div>
+
+      <footer>
+        <div className="footer-container">
+          <nav className="nav-footer">
+            <p id="copyright">&copy;{`Hanna Akhramchuk ${thisYear}`}</p>
+
+            <section className="socials-footer">
+              <span className="social-footer">
+                <a href="https://linkedin.com/in/hanna-akhramchuk-3a9087201">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#616193"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                  </svg>
+                </a>
+              </span>
+              <span className="social-footer">
+                <a href="https://github.com/akhhanna20">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#616193"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                </a>
+              </span>
+            </section>
+          </nav>
+        </div>
+      </footer>
+    </>
   );
 }
 
