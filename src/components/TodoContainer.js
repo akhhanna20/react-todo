@@ -193,7 +193,6 @@ function TodoContainer({ tableName }) {
     const updatedTodoList = todoList.map((todo) =>
       todo.id === id ? { ...todo, title: newTitle } : todo
     );
-    console.log("updList", updatedTodoList);
     setTodoList(updatedTodoList);
     const updTodo = updatedTodoList.find((todo) => todo.id === id);
     await changeTodo(id, updTodo);
@@ -229,26 +228,28 @@ function TodoContainer({ tableName }) {
     <>
       <div className="todo-wrapper">
         <div className="image-container">
-          <img src="images/ocean-4007309_1280.jpg" alt="mountains" />
+          <img src="images/ocean.jpg" alt="ocean" />
           <div className="bottom-right">
             All your dreams can come true if you have the courage to pursue them
           </div>
         </div>
-        <h1>{tableName}</h1>
+        <h1>Todo List integrated with Airtable</h1>
         <h3>
           Date: {today.getMonth() + 1}/{today.getDate()}/{today.getFullYear()}
         </h3>
         <AddTodoForm onAddTodo={addTodo} />
 
-        {ascSort ? (
-          <button className="toggle-btn" onClick={toggle}>
-            ▲
-          </button>
-        ) : (
-          <button className="toggle-btn" onClick={toggle}>
-            ▼
-          </button>
-        )}
+        <div className="toggle-container">
+          {ascSort ? (
+            <button className="toggle-btn" onClick={toggle}>
+              ▲ A - Z
+            </button>
+          ) : (
+            <button className="toggle-btn" onClick={toggle}>
+              ▼ Z - A
+            </button>
+          )}
+        </div>
 
         {isLoading ? (
           <p>Loading your todos...</p>

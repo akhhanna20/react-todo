@@ -34,7 +34,6 @@ function TodoList({
             handleDrag={handleDrag}
             handleDrop={handleDrop}
             onUpdateNewTitle={onUpdateNewTitle}
-            //id={id}
           />
         ))}
     </ul>

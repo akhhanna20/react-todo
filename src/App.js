@@ -9,7 +9,7 @@ function App() {
   const thisYear = today.getFullYear();
   return (
     <>
-      <div className="main">
+      <div className="main-wrapper">
         <BrowserRouter>
           <nav className="link">
             <Link to="/home">Home</Link>
@@ -21,7 +21,7 @@ function App() {
             <Route path="/home" element={<LandingPage />} />
             <Route
               path="/newList"
-              element={<TodoContainer tableName={"NewTodoList"} />}
+              element={<TodoContainer tableName={"New Todo List"} />}
             />
           </Routes>
         </BrowserRouter>
