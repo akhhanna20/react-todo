@@ -66,6 +66,7 @@ function TodoContainer({ tableName }) {
       const todosFromAPI = await response.json();
 
       const todos = todosFromAPI.records
+        .filter((records) => Object.keys(records.fields).length !== 0)
         .sort(ascSort ? sortTodosByFieldAsc : sortTodosByFieldDsc)
         .map((todo) => {
           const newTodo = {
